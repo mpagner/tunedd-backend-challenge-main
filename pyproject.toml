@@ -1,0 +1,26 @@
+[project]
+name = "tunedd-backend-challenge"
+version = "0.1.0"
+description = "A local RAG server that reads documents and can store multiple conversations"
+authors = [
+    {name = "Martín Campagner",email = "campagnermartin@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13, <4.0"
+dependencies = [
+    "qdrant-client>=1.16.2,<2.0.0",
+    "ollama>=0.6.1,<0.7.0",
+    "litellm (>=1.75.5,<2.0.0)",
+    "protobuf>=5.0,<7.0",
+    "grpcio>=1.68.0,<2.0.0",
+    "pypdf (>=6.4.2,<7.0.0)",
+    "google-adk[extensions] (>=1.21.0,<2.0.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = ">=3.13,<4.0"

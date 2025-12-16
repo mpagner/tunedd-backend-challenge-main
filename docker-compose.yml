@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  ollama:
+    entrypoint: /bin/bash -c "
+      ollama serve &
+      sleep 5 &&
+      ollama pull $${RAG_EMBEDDING_MODEL} &
+      ollama pull $${RAG_CHAT_MODEL} &
+      wait"
+    image: ollama/ollama:latest
+    environment:
+      - OLLAMA_KEEP_ALIVE=-1  # Keep the server running indefinitely
+    env_file:
+      - .env
+    volumes:
+      - tunedd-ollama-data:/root/.ollama
+    ports:
+      - 11434:11434
+    networks:
+      - tunedd-network
+    restart: on-failure
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"  # REST API
+      - "6334:6334"  # gRPC API
+    environment:
+      - QDRANT__TELEMETRY_DISABLED=true
+    volumes:
+      - tunedd-qdrant-data:/var/lib/qdrant/data
+    networks:
+      - tunedd-network
+    restart: on-failure
+
+networks:
+  tunedd-network:
+    driver: bridge
+
+volumes:
+  tunedd-qdrant-data:
+  tunedd-ollama-data:

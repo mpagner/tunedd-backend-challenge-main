@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  ollama:
+    environment:
+      ENABLE_ROCM: "1"
+      HSA_OVERRIDE_GFX_VERSION: "10.3.0"
+      OLLAMA_MAX_LOADED_MODELS: 2
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
