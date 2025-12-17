@@ -1,13 +1,10 @@
-import requests
 from tunedd_api.ingest.pdf_ingest import get_embedding
-import os
 import logging
 
 from tunedd_api.settings import settings
 
 from litellm import completion
-from google.adk.tools import FunctionTool
-from qdrant_client import QdrantClient, models
+from qdrant_client import QdrantClient
 
 #logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
