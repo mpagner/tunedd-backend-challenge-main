@@ -3,29 +3,26 @@ import os
 from pathlib import Path
 import glob
 import logging
-from dotenv import load_dotenv
+
 from pypdf import PdfReader
 
 from qdrant_client import QdrantClient, models
 import litellm
 
-load_dotenv()
+from tunedd_api.settings import settings
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 #litellm._turn_on_debug()
 
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
-qdrant_client = QdrantClient(url=QDRANT_URL, timeout=30.0)
-
-EMBEDDING_MODEL = os.getenv("RAG_EMBEDDING_MODEL")
-COLLECTION_NAME = "ai_docs"
+qdrant_client = QdrantClient(url=settings.QDRANT_URL, timeout=30.0)
 
 PDF_DIR = Path("data/ai-agents-arxiv-papers")
 
 def get_embedding(text: str):
     """Generates embeddings using LiteLLM/Ollama."""
     response = litellm.embedding(
-        model=f"ollama/{EMBEDDING_MODEL}",
+        model=f"ollama/{settings.RAG_EMBEDDING_MODEL }",
         input=text,
     )
     return response['data'][0]['embedding']
@@ -34,16 +31,16 @@ def ingest_data():
     """Reads files and indexes them into Qdrant."""
     logger.info("Checking Qdrant collection...")
     
-    if not qdrant_client.collection_exists(collection_name=COLLECTION_NAME):
+    if not qdrant_client.collection_exists(collection_name=settings.QDRANT_COLLECTION):
         qdrant_client.create_collection(
-            collection_name=COLLECTION_NAME,
+            collection_name=settings.QDRANT_COLLECTION ,
             vectors_config=models.VectorParams(size=768, distance=models.Distance.COSINE),
         )
-        logger.info(f"Created collection '{COLLECTION_NAME}'.")
+        logger.info(f"Created collection '{settings.QDRANT_COLLECTION}'.")
 
         files = glob.glob(os.path.join(PDF_DIR, "**", "*.pdf"), recursive=True)
         if not files:
-            logger.warning("No files found in ./data to ingest.")
+            logger.warning("No files found to ingest.")
             return
 
 
@@ -75,7 +72,7 @@ def ingest_data():
                 logger.error(f"Failed to process {file_path}: {e}")
         
         if points:
-            qdrant_client.upsert(collection_name=COLLECTION_NAME, points=points)
+            qdrant_client.upsert(collection_name=settings.QDRANT_COLLECTION, points=points)
             logger.info(f"Ingested {len(points)} chunks into Qdrant.")
     else:
         logger.info(f"Collection already exists.")
