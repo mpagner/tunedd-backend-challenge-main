@@ -1,6 +1,5 @@
 import logging
 from contextlib import asynccontextmanager
-from typing import Dict, Any, Optional
 import asyncio
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -13,16 +12,12 @@ from tunedd_api.ingest.pdf_ingest import ingest_data
 from tunedd_api.agent import root_agent
 
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-class CreateConversationRequest(BaseModel):
-    user_id: str
-    metadata: Optional[Dict[str, Any]] = None
-
-class MessageRequest(BaseModel):
-    message: str
+#logging.basicConfig(
+#    level=logging.DEBUG,
+#    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+#)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
