@@ -2,11 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 import asyncio
 import uvicorn
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-
-from google.adk.sessions import InMemorySessionService
-from google.adk.runners import Runner
+from fastapi import FastAPI
 
 from tunedd_api.ingest.pdf_ingest import ingest_data
 from tunedd_api.agent import root_agent

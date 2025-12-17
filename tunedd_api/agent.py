@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 
 from google.adk.models.lite_llm import LiteLlm 
 from google.adk.agents import LlmAgent
@@ -7,19 +6,16 @@ from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 
 from .rag.tool import qdrant_search_tool
+from tunedd_api.settings import settings
 
-load_dotenv()
 
-RAG_CHAT_MODEL = os.getenv("RAG_CHAT_MODEL")
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
-
-os.environ["LITELLM_API_BASE"] = OLLAMA_BASE_URL 
+os.environ["LITELLM_API_BASE"] = settings.OLLAMA_BASE_URL 
 
 session_service = InMemorySessionService()
 
 llm_model = LiteLlm(
-    model=f"ollama/{RAG_CHAT_MODEL}",
-    api_base=OLLAMA_BASE_URL 
+    model=f"ollama/{settings.RAG_CHAT_MODEL}",
+    api_base=settings.OLLAMA_BASE_URL 
 )
 
 rag_agent = LlmAgent(

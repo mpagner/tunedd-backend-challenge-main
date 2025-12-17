@@ -3,22 +3,20 @@ from tunedd_api.ingest.pdf_ingest import get_embedding
 import os
 import logging
 
+from tunedd_api.settings import settings
+
 from litellm import completion
 from google.adk.tools import FunctionTool
 from qdrant_client import QdrantClient, models
 
 #logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-RAG_EMBEDDING_MODEL = os.getenv("RAG_EMBEDDING_MODEL")
-RAG_CHAT_MODEL = os.getenv("RAG_CHAT_MODEL")
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
 
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
-qdrant_client = QdrantClient(url=QDRANT_URL)
+qdrant_client = QdrantClient(url=settings.QDRANT_URL)
 
 def generate_response(prompt: str):
     response = completion(
-        model=f"ollama/{RAG_CHAT_MODEL}",
+        model=f"ollama/{settings.RAG_CHAT_MODEL}",
         messages=[{"role": "assistant", "content": prompt}],
     )
     return response.json()
@@ -43,7 +41,7 @@ def qdrant_search_tool(input_text: str) -> dict:
     vector_data = get_embedding(adjusted_prompt)
 
     results = qdrant_client.query_points(
-        collection_name="ai_docs",
+        collection_name=settings.QDRANT_COLLECTION,
         query=vector_data,
         limit=3
     )
