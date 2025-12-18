@@ -8,12 +8,12 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13, <4.0"
 dependencies = [
-    "qdrant-client>=1.16.2,<2.0.0",
     "ollama>=0.6.1,<0.7.0",
     "litellm (>=1.75.5,<2.0.0)",
     "protobuf>=5.0,<7.0",
     "grpcio>=1.68.0,<2.0.0",
     "pypdf (>=6.4.2,<7.0.0)",
+    "google-adk>=1.19.0",
     "google-adk[extensions] (>=1.21.0,<2.0.0)",
 ]
 
