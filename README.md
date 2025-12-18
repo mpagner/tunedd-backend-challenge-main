@@ -17,8 +17,8 @@ This server uses ```nomic-embed-text``` for text embeddings and ```gemma3:1b``` 
 
 ```bash
 # Clone and setup
-git clone <your-repo>
-cd <your-repo>
+git clone https://github.com/mpagner/tunedd-backend-challenge-main
+cd tunedd-backend-challenge-main
 
 # Copy environment variables
 cp .env.example .env
