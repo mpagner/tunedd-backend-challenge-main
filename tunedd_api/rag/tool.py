@@ -13,10 +13,10 @@ qdrant_client = QdrantClient(url=settings.QDRANT_URL)
 def generate_response(prompt: str):
     response = completion(
         model=f"ollama/{settings.RAG_CHAT_MODEL}",
-        messages=[{"role": "assistant", "content": prompt}],
+        messages=[{"role": "user", "content": prompt}],
         api_base=settings.OLLAMA_BASE_URL
     )
-    return response.json()
+    return response.choices[0].message.content
 
 def qdrant_search_tool(input_text: str) -> dict:
     """Searches a local knowledge base for information pertaining to the input_text.

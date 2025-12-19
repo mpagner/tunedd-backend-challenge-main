@@ -30,7 +30,7 @@ services:
       
       wait $$OLLAMA_PID
       "
-    image: ollama/ollama:0.5.2
+    image: ollama/ollama:latest
     environment:
       - OLLAMA_KEEP_ALIVE=-1  # Keep the server running indefinitely
     env_file:
