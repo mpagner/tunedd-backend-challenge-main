@@ -34,7 +34,7 @@ pipx install poetry
 
 # In project root folder, set up Python environment
 poetry install
-poetry shell
+poetry env activate
 
 # application
 python -m main
