@@ -10,10 +10,10 @@ from tunedd_api.agent import root_agent
 
 logger = logging.getLogger(__name__)
 
-#logging.basicConfig(
-#    level=logging.DEBUG,
-#    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s'
-#)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

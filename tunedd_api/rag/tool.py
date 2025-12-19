@@ -6,7 +6,6 @@ from tunedd_api.settings import settings
 from litellm import completion
 from qdrant_client import QdrantClient
 
-#logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 qdrant_client = QdrantClient(url=settings.QDRANT_URL)
@@ -14,9 +13,10 @@ qdrant_client = QdrantClient(url=settings.QDRANT_URL)
 def generate_response(prompt: str):
     response = completion(
         model=f"ollama/{settings.RAG_CHAT_MODEL}",
-        messages=[{"role": "assistant", "content": prompt}],
+        messages=[{"role": "user", "content": prompt}],
+        api_base=settings.OLLAMA_BASE_URL
     )
-    return response.json()
+    return response.choices[0].message.content
 
 def qdrant_search_tool(input_text: str) -> dict:
     """Searches a local knowledge base for information pertaining to the input_text.
@@ -29,7 +29,7 @@ def qdrant_search_tool(input_text: str) -> dict:
         input_text: The user's text input. 
     
     Returns:
-        A dictionary with a status and a digest text.
+        A dictionary with a status and the retrieved passages as a digest.
     """
     logger.info(f"Tool executing: Search for '{input_text}'")
 
@@ -44,22 +44,8 @@ def qdrant_search_tool(input_text: str) -> dict:
     )
 
     passages = "\n".join([f"- {point.payload['text']}" for point in results.points])
-
-    augmented_prompt = f"""
-      The following are relevant passages: 
-      <retrieved-data>
-      {passages}
-      </retrieved-data>
-      
-      Here's the original user prompt, summarize the passages in order to answer the prompt:
-      <user-prompt>
-      {input_text}
-      </user-prompt>
-    """
-
-    response = generate_response(augmented_prompt)
     
     return {
         "status": "success",
-        "message": response,
+        "message": passages,
     }

@@ -28,28 +28,22 @@ rag_agent = LlmAgent(
         additional context based on data from documents that are retrievable using
         qdrant_search_tool. 
                  
-        Do not reveal your internal chain-of-thought or how you used the chunks.
-        Simply provide concise and factual answers. If you are not certain or the
-        information is not available, clearly state that you do not have
-        enough information.
+        ## CRITICAL RULES:
+        - Provide your final answer as PLAIN TEXT only.
+        - NEVER output JSON.
+        - NEVER call nonexistent functions like 'output()', 'assistant()', or 'answer()'.
+        - If you have an answer, just type it out naturally.
+        - Do not reveal your internal process or that you used a tool.
                  
+        ## TOOL USAGE:
         Only call the qdrant_search_tool when the user input contains any question about, or
         petition to explain, terms or topics related to AI, Artificial Intelligence, Agents
         or LLMs. In that case:
-        1 - Use qdrant_search_tool once with the user input as a parameter
-        2 - Output the digest from qdrant_search_tool as plain text.
+        1 - Use qdrant_search_tool once with the user input as a parameter.
+        2 - Synthesize an answer based on the retrieved text and output it as plain text.
                  
-        If you believe the user is just chatting and having casual conversation,
-        don't use qdrant_search_tool and answer casually in plain text.
-                 
-        Provide your final answer as a DIRECT TEXT RESPONSE to the user. Do not call
-        any tools like 'output', 'assistant' or 'answer' to provide your final response.
-                 
-        Do NOT answer in JSON format.
-                 
-        If you are not certain about the user intent, make sure to ask clarifying questions
-        before answering. Once you have the information you need, you can use the retrieval tool
-        If you cannot provide an answer, clearly explain why.
+        If you believe the user is just chatting, don't use the tool and answer casually.
+        If you are not certain, ask a clarifying question.
         """
     ),
 )
