@@ -3,12 +3,35 @@ version: '3.8'
 services:
   ollama:
     container_name: ollama
-    entrypoint: /bin/bash -c "
+    entrypoint: /bin/bash
+    command: >
+      -c "
+      set -eu
+      echo 'Starting ollama serve...'
+      
       ollama serve &
-      sleep 15 &&
-      ollama pull $${RAG_EMBEDDING_MODEL} &
-      ollama pull $${RAG_CHAT_MODEL} &
-      wait"
+      OLLAMA_PID=$$!
+      
+      MAX_RETRIES=5
+      RETRY_DELAY=2
+      n=0
+      
+      echo 'Waiting for Ollama API...'
+
+      for ((n=0; n<$$MAX_RETRIES; n++)); do
+        if exec 3<>/dev/tcp/127.0.0.1/11434 2>/dev/null; then
+          exec 3<&-
+          break
+        fi
+        sleep $$RETRY_DELAY
+      done
+      
+      echo 'Ollama ready. Pulling models...'
+      [ -n \"$${RAG_EMBEDDING_MODEL:-}\" ] && ollama pull \"$${RAG_EMBEDDING_MODEL}\"
+      [ -n \"$${RAG_CHAT_MODEL:-}\" ] && ollama pull \"$${RAG_CHAT_MODEL}\"
+      
+      wait $$OLLAMA_PID
+      "
     image: ollama/ollama:0.13.0
     environment:
       - OLLAMA_KEEP_ALIVE=-1  # Keep the server running indefinitely
