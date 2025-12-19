@@ -37,7 +37,7 @@ rag_agent = LlmAgent(
         petition to explain, terms or topics related to AI, Artificial Intelligence, Agents
         or LLMs. In that case:
         1 - Use qdrant_search_tool once with the user input as a parameter
-        2 - Output the digest from qdrant_search_tool as plain text.
+        2 - Synthesize an answer based on the retrieved passages and output it as plain text.
                  
         If you believe the user is just chatting and having casual conversation,
         don't use qdrant_search_tool and answer casually in plain text.

@@ -11,7 +11,6 @@ import litellm
 
 from tunedd_api.settings import settings
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 #litellm._turn_on_debug()
 
@@ -22,8 +21,9 @@ PDF_DIR = Path("data/ai-agents-arxiv-papers")
 def get_embedding(text: str):
     """Generates embeddings using LiteLLM/Ollama."""
     response = litellm.embedding(
-        model=f"ollama/{settings.RAG_EMBEDDING_MODEL }",
+        model=f"ollama/{settings.RAG_EMBEDDING_MODEL}",
         input=text,
+        api_base=settings.OLLAMA_BASE_URL
     )
     return response['data'][0]['embedding']
 
@@ -32,11 +32,15 @@ def ingest_data():
     logger.info("Checking Qdrant collection...")
     
     if not qdrant_client.collection_exists(collection_name=settings.QDRANT_COLLECTION):
+        # Get a sample embedding to determine vector size dynamically
+        sample_embedding = get_embedding("sample text")
+        vector_size = len(sample_embedding)
+        
         qdrant_client.create_collection(
             collection_name=settings.QDRANT_COLLECTION ,
-            vectors_config=models.VectorParams(size=768, distance=models.Distance.COSINE),
+            vectors_config=models.VectorParams(size=vector_size, distance=models.Distance.COSINE),
         )
-        logger.info(f"Created collection '{settings.QDRANT_COLLECTION}'.")
+        logger.info(f"Created collection '{settings.QDRANT_COLLECTION}' with size {vector_size}.")
 
         files = glob.glob(os.path.join(PDF_DIR, "**", "*.pdf"), recursive=True)
         if not files:
